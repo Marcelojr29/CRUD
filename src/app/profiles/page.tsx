@@ -11,48 +11,51 @@ import {
   TextField,
   Box,
 } from '@mui/material';
-import { Edit, Delete, Search, FilterList } from '@mui/icons-material';
-import UserModal from './userModal';
-import { User } from '@/interfaces/userInterface';
+import {
+  Edit,
+  Delete,
+  Search,
+  FilterList,
+  Visibility,
+} from '@mui/icons-material';
+import GenericModal from '@/components/genericModal';
+import { Profile } from '@/interfaces/profileInterface';
 import DataTable from '@/components/table-simple';
 import { Column } from '@/interfaces/tableSimpleInterface';
 
 const paginationOptions = [10, 50, 100];
-const newUserButtonText = 'New User';
+const newProfileButtonText = 'New Profile';
 
-const UsersTable: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([
+const ProfilesTable: React.FC = () => {
+  const [profiles, setProfiles] = useState<Profile[]>([
     {
       id: 1,
-      firstname: 'Teste',
-      lastname: 'Da Silva',
-      email: 'testedasilva@gmail.com',
-      profile: 'Admin',
+      name: 'Admin',
       status: 'Active',
     },
     {
       id: 2,
-      firstname: 'Teste',
-      lastname: 'Da Silva Junior',
-      email: 'testedasilvajunior@gmail.com',
-      profile: 'Viewer',
+      name: 'Viewer',
       status: 'Inactive',
     },
   ]);
 
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'delete'>(
-    'create',
-  );
+  const [modalMode, setModalMode] = useState<
+    'create' | 'edit' | 'delete' | 'view'
+  >('create');
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const handleOpenModal = (mode: 'create' | 'edit' | 'delete', user?: User) => {
-    setSelectedUser(user || null);
+  const handleOpenModal = (
+    mode: 'create' | 'edit' | 'delete' | 'view',
+    profile?: Profile,
+  ) => {
+    setSelectedProfile(profile || null);
     setModalMode(mode);
     setIsModalOpen(true);
   };
@@ -61,13 +64,16 @@ const UsersTable: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleSaveUser = (user: User) => {
+  const handleSaveProfile = (profile: Profile) => {
     if (modalMode === 'create') {
-      setUsers([...users, { ...user, id: users.length + 1 }]);
+      setProfiles([
+        ...profiles,
+        { ...profile, id: profiles.length + 1, status: 'Active' },
+      ]);
     } else if (modalMode === 'edit') {
-      setUsers(users.map((u) => (u.id === user.id ? user : u)));
-    } else if (modalMode === 'delete' && user.id) {
-      setUsers(users.filter((u) => u.id !== user.id));
+      setProfiles(profiles.map((p) => (p.id === profile.id ? profile : p)));
+    } else if (modalMode === 'delete' && profile.id) {
+      setProfiles(profiles.filter((p) => p.id !== profile.id));
     }
   };
 
@@ -93,15 +99,12 @@ const UsersTable: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const columns: Column<User>[] = [
-    { key: 'firstname', header: 'First Name' },
-    { key: 'lastname', header: 'Last Name' },
-    { key: 'email', header: 'Email' },
-    { key: 'profile', header: 'Profile' },
+  const columns: Column<Profile>[] = [
+    { key: 'name', header: 'Profile' },
     {
       key: 'status',
       header: 'Status',
-      render: (row: User) => (
+      render: (row: Profile) => (
         <Typography
           sx={{
             bgcolor: row.status === 'Active' ? '#6DA541' : '#D3D3D3',
@@ -120,8 +123,14 @@ const UsersTable: React.FC = () => {
     {
       key: 'actions',
       header: 'Actions',
-      render: (row: User) => (
+      render: (row: Profile) => (
         <>
+          <IconButton
+            onClick={() => handleOpenModal('view', row)}
+            color="primary"
+          >
+            <Visibility />
+          </IconButton>
           <IconButton
             onClick={() => handleOpenModal('edit', row)}
             color="primary"
@@ -139,17 +148,14 @@ const UsersTable: React.FC = () => {
     },
   ];
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.lastname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredProfiles = profiles.filter((profile) =>
+    profile.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
     <>
       <Typography variant="h4" gutterBottom>
-        User
+        Profile
       </Typography>
       <Box
         display="flex"
@@ -181,7 +187,7 @@ const UsersTable: React.FC = () => {
           onClick={() => handleOpenModal('create')}
           style={{ borderRadius: '20px' }}
         >
-          {newUserButtonText}
+          {newProfileButtonText}
         </Button>
         <Menu
           anchorEl={anchorEl}
@@ -198,9 +204,9 @@ const UsersTable: React.FC = () => {
           ))}
         </Menu>
       </Box>
-      <DataTable<User>
+      <DataTable<Profile>
         columns={columns}
-        data={filteredUsers.slice(
+        data={filteredProfiles.slice(
           page * rowsPerPage,
           page * rowsPerPage + rowsPerPage,
         )}
@@ -208,7 +214,7 @@ const UsersTable: React.FC = () => {
       <TablePagination
         component="div"
         rowsPerPageOptions={[10, 50, 100]}
-        count={filteredUsers.length}
+        count={filteredProfiles.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -216,15 +222,35 @@ const UsersTable: React.FC = () => {
           handleChangeRowsPerPage(parseInt(event.target.value, 10))
         }
       />
-      <UserModal
+      <GenericModal<Profile>
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onSave={handleSaveUser}
-        userData={selectedUser}
+        onSave={handleSaveProfile}
+        data={selectedProfile}
         mode={modalMode}
+        fields={[
+          { key: 'name', label: 'Profile Name', type: 'text' },
+          {
+            key: 'status',
+            label: 'Status',
+            type: 'select',
+            options: [
+              { value: 'Active', label: 'Active' },
+              { value: 'Inactive', label: 'Inactive' },
+            ],
+            disabled: modalMode === 'create',
+          },
+        ]}
+        title={
+          modalMode === 'create'
+            ? 'New Profile'
+            : modalMode === 'edit'
+              ? 'Edit Profile'
+              : 'Delete Profile'
+        }
       />
     </>
   );
 };
 
-export default UsersTable;
+export default ProfilesTable;

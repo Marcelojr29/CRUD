@@ -14,10 +14,10 @@ import {
   InputLabel,
 } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material';
-import { User } from '../../interfaces/userInterface';
-import { UserModalInterface } from '../../interfaces/userModalInterface';
+import { User } from '@/interfaces/userInterface';
+import { UserModalInterface } from '@/interfaces/userModalInterface';
 
-const userModal: React.FC<UserModalInterface> = ({
+const UserModal: React.FC<UserModalInterface> = ({
   isOpen,
   onClose,
   onSave,
@@ -35,16 +35,16 @@ const userModal: React.FC<UserModalInterface> = ({
     },
   ];
 
-  const statusOptions = [
-    {
-      value: 'active',
-      label: 'Active',
-    },
-    {
-      value: 'inactive',
-      label: 'Inactive',
-    },
-  ];
+  // const statusOptions = [
+  //   {
+  //     value: 'active',
+  //     label: 'Active',
+  //   },
+  //   {
+  //     value: 'inactive',
+  //     label: 'Inactive',
+  //   },
+  // ];
 
   const saveButtonText = mode === 'delete' ? 'Confirm' : 'Save';
 
@@ -138,9 +138,12 @@ const userModal: React.FC<UserModalInterface> = ({
             <FormControl fullWidth margin="dense">
               <InputLabel>Profile</InputLabel>
               <Select
+                fullWidth
+                label="Profile"
                 name="profile"
                 value={user.profile}
                 onChange={handleSelectChange}
+                margin="dense"
                 required
               >
                 {profileOptions.map((option) => (
@@ -154,15 +157,21 @@ const userModal: React.FC<UserModalInterface> = ({
               <FormControl fullWidth margin="dense">
                 <InputLabel>Status</InputLabel>
                 <Select
+                  fullWidth
+                  label="Status"
                   name="status"
                   value={user.status}
                   onChange={handleStatusChange}
+                  margin="dense"
+                  sx={{
+                    bgcolor: user.status === 'Active' ? '#6DA541' : '#D3D3D3',
+                    color: '#fff',
+                    borderRadius: '5px',
+                    width: user.status === 'Active' ? '125px' : '125px',
+                  }}
                 >
-                  {statusOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Inactive">Inactive</MenuItem>
                 </Select>
               </FormControl>
             )}
@@ -181,4 +190,4 @@ const userModal: React.FC<UserModalInterface> = ({
   );
 };
 
-export default userModal;
+export default UserModal;

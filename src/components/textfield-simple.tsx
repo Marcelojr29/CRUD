@@ -7,7 +7,7 @@ import {
   Box,
 } from '@mui/material';
 import { Search, Clear } from '@mui/icons-material';
-import { TextFieldInterface } from '../interfaces/textFieldInterface';
+import { TextFieldInterface } from '@/interfaces/textFieldInterface';
 
 const TextFieldSimple: React.FC<TextFieldInterface> = ({
   label,
@@ -21,7 +21,6 @@ const TextFieldSimple: React.FC<TextFieldInterface> = ({
   isUpperCase = false,
   isLabelSide = false,
   withIconSearch = false,
-  required = false,
   onChange,
   onKeyUp,
 }) => {

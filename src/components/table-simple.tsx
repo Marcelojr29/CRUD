@@ -13,7 +13,7 @@ import {
   Box,
 } from '@mui/material';
 import TextFieldSimple from './textfield-simple';
-import { DataTableInterface } from '../interfaces/tableSimpleInterface';
+import { DataTableInterface } from '@/interfaces/tableSimpleInterface';
 
 function DataTable<T extends Record<string, unknown>>({
   columns,
